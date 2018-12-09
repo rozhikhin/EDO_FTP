@@ -1,0 +1,9 @@
+.idea/
+venv/
+build/
+__pycache__/
+TEST/
+
+
+
+
