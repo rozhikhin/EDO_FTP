@@ -60,17 +60,24 @@ class FtpDown(object):
             ftp.login(user, password)
             ftp.cwd(ftp_dir)
             files = ftp.nlst()
+
             for filename in files:
-                print(filename)
-                with open(local_dir + filename, "wb") as file:
-                    ftp.retrbinary("RETR " + filename, file.write)
+                try:
+                    print(filename)
+                    with open(local_dir + filename, "wb") as file:
+                        ftp.retrbinary("RETR " + filename, file.write)
+                except ftplib.error_perm as err:
+                        print(str(err))
+                        if str(err) == "550 Access is denied.":
+                            continue
+
         except ftplib.error_perm as resp:
             if str(resp) == "550 No files found.":
                 print("Directory is empty.")
             print(str(resp))
         except socket.gaierror as err:
-                print(str(err))
-                print("Хост не существует")
+            print(str(err))
+            print("Хост не существует")
         except TimeoutError as err:
             print(str(err))
             print("Предпринимаю очередную попытку!")
@@ -81,7 +88,12 @@ class FtpDown(object):
         else:
             print('Все файлы скачаны')
             for filename in files:
-                ftp.delete(filename)
+                try:
+                    ftp.delete(filename)
+                except ftplib.error_perm as err:
+                    print(str(err))
+                    if str(err) == "550 Access is denied.":
+                        continue
             ftp.quit()
 
 inst = FtpDown()
