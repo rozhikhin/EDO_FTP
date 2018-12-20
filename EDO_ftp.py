@@ -1,20 +1,40 @@
+"""
+Модуль содержит класс EDOFtp
+"""
 import ftplib
 import sys
 import socket
 
-class FtpDown(object):
+
+class EDOFtp(object):
+    """
+    Класс содержит данные для работы с ФТП
+    """
     def __init__(self):
+        """
+        Метод init - начальная инициализация переменных
+        """
+        # Счетчик попыток
         self.i = 1
+        # Словарь с переданными аргументами
         self.params_dict = {}
 
     def show_help(self):
-        print('\nПример использования:\n filin_ftp.exe host=aaa.ru port=21 user=vasya password=pass remote_dir=Orders local_dir=C:\Stoletov\Orders\\ encoding=windows-1251')
+        """
+        Метод show_help показывает информацию об использовании программы
+        :return:
+        """
+        print('\nПример использования:\n EDO_ftp.exe host=aaa.ru port=21 user=vasya password=pass remote_dir=Orders local_dir=C:\Stoletov\Orders\\ encoding=windows-1251')
         print('\nПараметры port и remote_dir можно не указывать. По умолчанию:\n port = 21\n'
               ' remote_dir - корневой каnалог пользователя FTP\n'
               'encoding = latin-1')
         sys.exit()
 
     def get_params(self):
+        """
+        Метод get_params словарь с параметрами
+        :return:
+        """
         for param in sys.argv:
             if param == __file__:
                 continue
@@ -32,7 +52,11 @@ class FtpDown(object):
         return self.params_dict
 
     def get_files(self):
-
+        """
+        Метод get_files скачивает файлы с указанного в параметрах сервера.
+        Если с первой поытки скачать не удалось, то предпринимается следующая попытка и так до 10 попыток.
+        :return: None
+        """
         if self.i == 10:
             print('Все 10 попыток были безуспешны')
             return
@@ -96,7 +120,7 @@ class FtpDown(object):
                         continue
             ftp.quit()
 
-inst = FtpDown()
+inst = EDOFtp()
 if "help" in sys.argv:
     inst.show_help()
 inst.get_files()
